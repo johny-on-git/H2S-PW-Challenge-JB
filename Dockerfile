@@ -23,6 +23,6 @@ COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 EXPOSE ${PORT}
 
-# Explicitly substitute the PORT variable and start Nginx.
-# This ensures it works on Cloud Run even if the default entrypoint scripts are bypassed.
-CMD sh -c "envsubst '\\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Safely replace <PORT> with the actual environment variable using sed.
+# This avoids envsubst destroying Nginx's built-in $uri variables.
+CMD sed "s/<PORT>/$PORT/g" /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
