@@ -62,5 +62,18 @@ describe('GET /api/reports', () => {
     expect(Array.isArray(data.reports)).toBe(true);
     expect(Array.isArray(data.activeAlerts)).toBe(true);
   });
+
+  it('should return 500 when database query fails', async () => {
+    // We import db directly to spy on it
+    const { db } = await import('../lib/db');
+    const querySpy = vi.spyOn(db, 'query').mockRejectedValueOnce(new Error('DB Error'));
+    
+    // We need to re-import GET to ensure it uses the mocked db if not already
+    const { GET } = await import('../app/api/reports/route');
+    const response = await GET(new Request('http://localhost/api/reports'));
+    
+    expect(response.status).toBe(500);
+    querySpy.mockRestore();
+  });
 });
 
