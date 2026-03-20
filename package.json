@@ -9,7 +9,12 @@
     "preview": "vite preview",
     "start": "vite preview --port ${PORT:=8080} --host 0.0.0.0"
   },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
   "devDependencies": {
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^2.1.2",
+    "@types/node": "^20.0.0"
   }
 }
