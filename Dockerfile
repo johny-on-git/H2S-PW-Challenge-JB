@@ -18,10 +18,11 @@ FROM nginx:stable-alpine
 ENV PORT=8080
 
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+# Copy template to a staging location
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 EXPOSE ${PORT}
 
-# Nginx alpine image has a built-in feature to process templates in /etc/nginx/templates/*.template 
-# and output them to /etc/nginx/conf.d/*.conf using envsubst.
-CMD ["nginx", "-g", "daemon off;"]
+# Explicitly substitute the PORT variable and start Nginx.
+# This ensures it works on Cloud Run even if the default entrypoint scripts are bypassed.
+CMD sh -c "envsubst '\\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
