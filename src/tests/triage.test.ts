@@ -1,7 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { checkTriage } from '../services/triage';
+import { clearReports } from '../services/reports';
 
 describe('Triage Engine (US6)', () => {
+  beforeEach(() => {
+    clearReports();
+  });
   const safetyCategory = 'safety';
   const centerPoint = { lat: 40.7128, lng: -74.0060 };
 

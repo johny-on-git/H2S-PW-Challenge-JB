@@ -1,4 +1,20 @@
+import { getRecentReports } from '../services/reports';
+import { summarizeIssues } from '../services/intelligence';
+
 export function renderDashboardUI(container: HTMLElement) {
+    let summary = 'Loading AI insights...';
+
+    async function loadSummary() {
+        try {
+            const reports = await getRecentReports();
+            summary = await summarizeIssues(reports);
+            updateView();
+        } catch (error) {
+            summary = 'Error loading insights.';
+            updateView();
+        }
+    }
+
     function updateView() {
         container.innerHTML = `
             <div class="view-container fade-in">
@@ -18,6 +34,13 @@ export function renderDashboardUI(container: HTMLElement) {
                         </div>
                     </div>
                     
+                    <div class="bento-item glass-card" style="border-left: 4px solid var(--md-sys-color-primary, #007bff);">
+                        <h3>✨ AI Insights (Gemini)</h3>
+                        <p style="margin-top: 12px; line-height: 1.5; font-size: 14px;">
+                            ${summary}
+                        </p>
+                    </div>
+
                     <div class="bento-item glass-card" style="border-left: 4px solid var(--md-sys-color-error);">
                         <div style="display: flex; justify-content: space-between;">
                             <h3>🚨 Red Alert</h3>
@@ -47,4 +70,5 @@ export function renderDashboardUI(container: HTMLElement) {
     }
 
     updateView();
+    loadSummary();
 }

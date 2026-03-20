@@ -15,20 +15,32 @@ export interface Report extends ReportInput {
   created_at: Date;
 }
 
+// Mock in-memory store for reports
+const reportsStore: Report[] = [];
+
 export async function submitReport(input: ReportInput): Promise<{ success: boolean; data: Report }> {
   // Validate input
   const validated = ReportSchema.parse(input);
 
-  // In a real app, this would save to the DB.
-  // For TDD, we'll return a mock saved object.
   const report: Report = {
     id: Math.random().toString(36).substring(7),
     ...validated,
     created_at: new Date(),
   };
 
+  reportsStore.push(report);
+
   return {
     success: true,
     data: report,
   };
+}
+
+export async function getRecentReports(): Promise<Report[]> {
+  // In a real app, this would query the DB.
+  return [...reportsStore];
+}
+
+export function clearReports() {
+  reportsStore.length = 0;
 }
